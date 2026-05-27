@@ -1,0 +1,103 @@
+name: hookclose
+
+x-common: &common
+  env_file: .env
+  restart: unless-stopped
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  # ---------------------------------------------------------------------------
+  # Data plane
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: hookclose-postgres
+    <<: *common
+    environment:
+      POSTGRES_DB: ${HOOKCLOSE_POSTGRES_DB:-hookclose}
+      POSTGRES_USER: ${HOOKCLOSE_POSTGRES_USER:-hookclose}
+      POSTGRES_PASSWORD: ${HOOKCLOSE_POSTGRES_PASSWORD:-hookclose}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/00_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${HOOKCLOSE_POSTGRES_USER:-hookclose} -d ${HOOKCLOSE_POSTGRES_DB:-hookclose}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: hookclose-redis
+    <<: *common
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # ---------------------------------------------------------------------------
+  # Runtime plane
+  # ---------------------------------------------------------------------------
+  scheduler:
+    container_name: hookclose-scheduler
+    build:
+      context: ./scheduler
+    <<: *common
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8100/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  workflow-engine:
+    container_name: hookclose-workflow-engine
+    build:
+      context: ./workflow-engine
+    <<: *common
+    ports:
+      - "8101:8101"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8101/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  opencode-worker:
+    container_name: hookclose-opencode-worker
+    build:
+      context: ./opencode-worker
+    <<: *common
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8102/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  redis_data:

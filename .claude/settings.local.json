@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m ruff check . --output-format=concise)",
+      "Bash(python -m ruff check .)",
+      "Bash(python -m ruff format --check .)",
+      "Bash(python -m ruff format .)",
+      "Bash(python -m mypy runtime agents contracts events workflows memory sandbox observability scheduler tasks adapters)",
+      "Bash(python -m pytest -m \"not integration\" -q)",
+      "Bash(rm -f \"d:/Software Development/Porfolio/Hookclose/memory/hookclose-build-plan.md\" \"d:/Users/Usuario/.claude/projects/d--Software-Development-Porfolio-Hookclose/memory/MEMORY.md\")",
+      "Read(//c/Users/Usuario/.claude/projects/d--Software-Development-Porfolio-Hookclose/memory/**)",
+      "Bash(git --version)",
+      "Bash(awk '{print $5, $9}')"
+    ],
+    "additionalDirectories": [
+      "d:\\Users\\Usuario\\.claude\\projects\\d--Software-Development-Porfolio-Hookclose\\memory"
+    ]
+  }
+}

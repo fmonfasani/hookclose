@@ -1,0 +1,39 @@
+name: Feature / capability request
+description: Propose a runtime capability, provider, or workflow.
+labels: ["enhancement", "triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What operational gap does this close?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+      description: |
+        How should it work? Keep the runtime deterministic and vendor-agnostic.
+        Note which bounded context it belongs to.
+    validations:
+      required: true
+  - type: dropdown
+    id: context
+    attributes:
+      label: Bounded context
+      options:
+        - runtime
+        - providers / adapters
+        - routing
+        - workers
+        - workflows
+        - observability
+        - scheduler
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

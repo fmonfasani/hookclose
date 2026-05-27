@@ -1,0 +1,7 @@
+{
+  "id": "TASK-001",
+  "type": "IMPLEMENTATION",
+  "goal": "Implement EventBus",
+  "status": "PENDING",
+  "priority": 1
+}

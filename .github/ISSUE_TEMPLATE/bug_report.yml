@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a defect in the runtime, a provider, or a workflow.
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Determinism matters here — please include the
+        exact inputs and the runtime state so the failure can be reproduced.
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      description: e.g. runtime, providers, routing, opencode-worker, scheduler
+      placeholder: providers
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you observe vs. what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Minimal, deterministic steps. Include task/workflow IDs if relevant.
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs / traces
+      description: Paste structured logs or the trace/correlation id. Redact secrets.
+      render: text
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: env (local/dev/staging/prod), commit SHA, Python version.
+    validations:
+      required: true

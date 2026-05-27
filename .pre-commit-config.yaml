@@ -1,0 +1,45 @@
+# Pre-commit hooks for HookClose / AINE runtime.
+# Install once:  pre-commit install
+# Run on all:    pre-commit run --all-files
+#
+# These mirror the CI quality gates so failures surface locally before push.
+minimum_pre_commit_version: "3.7.0"
+default_language_version:
+  python: python3.11
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.md$'
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        name: ruff (lint + autofix)
+        args: ["--fix", "--exit-non-zero-on-fix"]
+      - id: ruff-format
+        name: ruff (format)
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        name: mypy (strict)
+        additional_dependencies:
+          - "pydantic>=2.6"
+        args: ["--config-file=pyproject.toml"]
+        # Type-check the application packages only; exclude infra/docker globs.
+        files: '^(runtime|agents|contracts|events|workflows|memory|sandbox|observability|scheduler|tasks|adapters)/.*\.py$'

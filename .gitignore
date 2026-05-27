@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.eggs/
+*.egg-info/
+*.egg
+build/
+dist/
+pip-wheel-metadata/
+
+# Tooling
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Docker
+docker-compose.override.yml
+
+# Local state
+data/
+volumes/
+tmp/
+*.log
+logs/
+
+# Large local binaries / installers (not source)
+*.exe
+Docker Desktop Installer.exe
+
+# Alembic generated
+alembic/versions/*.py
+!alembic/versions/.gitkeep
