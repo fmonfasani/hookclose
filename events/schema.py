@@ -26,6 +26,7 @@ class EventTopic(StrEnum):
     SCHEDULER = "aine.scheduler"
     PROVIDER = "aine.provider"
     WORKER = "aine.worker"
+    CHAINING = "aine.chaining"
 
 
 EVENT_REGISTRY: Final[dict[str, type[DomainEvent]]] = {}
