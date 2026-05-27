@@ -55,3 +55,6 @@ Docker Desktop Installer.exe
 # Alembic generated
 alembic/versions/*.py
 !alembic/versions/.gitkeep
+
+# Proprietary product specs — kept local, not published
+HermesSell_*
