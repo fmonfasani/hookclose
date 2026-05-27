@@ -22,6 +22,7 @@ from providers.implementations import (
     ClaudeProvider,
     GeminiProvider,
     LocalProvider,
+    OpenAIProvider,
     OpenCodeProvider,
 )
 from providers.manager import ProviderManager
@@ -55,6 +56,7 @@ __all__ = [
     "InMemoryProviderStateStore",
     "LocalProvider",
     "NoProviderAvailable",
+    "OpenAIProvider",
     "OpenCodeProvider",
     "ProviderCreditExhausted",
     "ProviderError",

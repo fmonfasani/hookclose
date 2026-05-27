@@ -88,6 +88,40 @@ class OpenCodeProvider(_AdapterProvider):
         super().__init__(adapter, profile or self.default_profile(), clock=clock)
 
 
+class OpenAIProvider(_AdapterProvider):
+    """OpenAI-backed provider (codegen/review/analysis/extraction).
+
+    Wire with the real adapter at the composition root:
+    ``OpenAIProvider(OpenAIAdapter.from_env())``.
+    """
+
+    @staticmethod
+    def default_profile() -> ProviderProfile:
+        return ProviderProfile(
+            name="openai",
+            capabilities=frozenset(
+                {
+                    Capability.CODE_GENERATION,
+                    Capability.REVIEW,
+                    Capability.ANALYSIS,
+                    Capability.EXTRACTION,
+                }
+            ),
+            cost_per_1k_tokens=1.0,
+            context_window=128_000,
+            weight=1.0,
+        )
+
+    def __init__(
+        self,
+        adapter: LLMProviderPort,
+        *,
+        profile: ProviderProfile | None = None,
+        clock: Clock = utc_now,
+    ) -> None:
+        super().__init__(adapter, profile or self.default_profile(), clock=clock)
+
+
 class GeminiProvider(_AdapterProvider):
     """Very cheap extraction / large-context analysis / embeddings."""
 
