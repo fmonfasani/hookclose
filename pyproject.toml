@@ -48,6 +48,8 @@ dev = [
     "hypothesis>=6.100,<7.0",
     "pre-commit>=3.7,<4.0",
     "types-redis>=4.6,<5.0",
+    "pip-audit>=2.7,<3.0",
+    "build>=1.2,<2.0",
 ]
 
 [project.scripts]
@@ -170,6 +172,7 @@ markers = [
     "unit: pure unit tests (no I/O, no containers)",
     "integration: requires postgres/redis",
     "contract: contract-level tests against Protocol surface",
+    "smoke: in-process end-to-end wiring checks (CI smoke gate)",
     "slow: long-running tests",
 ]
 
