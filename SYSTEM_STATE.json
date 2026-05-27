@@ -13,11 +13,12 @@
     21,
     22,
     23,
-    24
+    24,
+    25
   ],
   "current_phase": 5,
-  "current_prompt": 25,
+  "current_prompt": 26,
   "failed_prompts": [],
-  "runtime_state": "CHAINING",
-  "updated_at": "2026-05-27T21:40:19+00:00"
+  "runtime_state": "SELF_HEALING",
+  "updated_at": "2026-05-27T22:06:28+00:00"
 }
