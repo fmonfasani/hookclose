@@ -1,0 +1,10 @@
+# Normalize line endings to LF in the working tree on all platforms so the
+# `ruff format --check` gate stays deterministic regardless of OS.
+* text=auto eol=lf
+
+# Treat known binaries as binary (never normalize / diff as text).
+*.exe binary
+*.docx binary
+*.png binary
+*.jpg binary
+*.ico binary
