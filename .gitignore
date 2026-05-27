@@ -35,8 +35,11 @@ htmlcov/
 .env
 .env.*
 !.env.example
+!.env.prod.example
 *.pem
 *.key
+deploy/.env.prod
+deploy/nginx/certs/
 
 # Docker
 docker-compose.override.yml
