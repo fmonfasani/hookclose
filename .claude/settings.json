@@ -7,7 +7,12 @@
       "Bash(python -m mypy runtime agents contracts events workflows memory sandbox observability scheduler tasks adapters providers)",
       "Bash(python -m pytest tests/test_routing.py -q)",
       "Bash(python -m ruff check --fix providers tests/test_routing.py events)",
-      "Bash(python -m ruff format providers tests events)"
+      "Bash(python -m ruff format providers tests events)",
+      "Bash(python -)",
+      "Bash(python -m pytest tests/test_openclaw_worker.py -q)",
+      "Bash(grep -vE \"warning:|ANN10|removed|no effect|^\\\\s*-|^$\")",
+      "Bash(grep -vE \"warning:|All checks|^\\\\s*-|^$\")",
+      "Bash(python -m mypy runtime agents contracts events workflows memory sandbox observability scheduler tasks adapters providers workers)"
     ]
   }
 }

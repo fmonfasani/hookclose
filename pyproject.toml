@@ -67,6 +67,7 @@ packages = [
     "tasks",
     "adapters",
     "providers",
+    "workers",
 ]
 
 # -----------------------------------------------------------------------------
@@ -100,9 +101,14 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101", "ANN", "PLR2004", "RUF059", "B007"]
+"tests/**/*.py" = ["S101", "ANN", "PLR2004", "RUF059", "B007", "ASYNC109"]
 "scripts/**/*.py" = ["PLR2004", "S101"]
 "**/__init__.py" = ["F401"]
+# `timeout` is part of the CommandRunner contract (passed to asyncio.wait_for).
+"workers/contracts.py" = ["ASYNC109"]
+"workers/openclaw.py" = ["ASYNC109"]
+# Local-fallback runner does fast local fs/path ops; acceptable off the hot path.
+"workers/runners.py" = ["ASYNC109", "ASYNC230", "ASYNC240"]
 # Interface boundaries where dynamically typed payloads are intentional:
 # structured logger fields, telemetry values, outbound JSON bodies.
 "observability/logging.py" = ["ANN401"]
@@ -114,6 +120,7 @@ ignore = [
 known-first-party = [
     "runtime", "agents", "contracts", "events", "workflows",
     "memory", "sandbox", "observability", "scheduler", "tasks", "adapters", "providers",
+    "workers",
 ]
 force-sort-within-sections = true
 
@@ -170,6 +177,7 @@ branch = true
 source = [
     "runtime", "agents", "contracts", "events", "workflows",
     "memory", "sandbox", "observability", "scheduler", "tasks", "adapters", "providers",
+    "workers",
 ]
 
 [tool.coverage.report]

@@ -53,6 +53,9 @@ _COMPLEXITY_SCORE: dict[TaskComplexity, float] = {
     TaskComplexity.CRITICAL: 1.0,
 }
 
+# At/above this complexity, ordering favors quality (pricier) over cost.
+_QUALITY_THRESHOLD = 0.5
+
 
 @dataclass(frozen=True, slots=True)
 class RoutingRequest:
@@ -153,7 +156,7 @@ class ComplexityRoutingEngine:
         ordered = tuple(name for name, _ in ranked)
         reason = (
             f"complexity={score:.2f} ({ctx_note}); "
-            f"{'quality-weighted' if score >= 0.5 else 'cost-weighted'} order"
+            f"{'quality-weighted' if score >= _QUALITY_THRESHOLD else 'cost-weighted'} order"
         )
         return RoutingDecision(
             capability=request.capability,
