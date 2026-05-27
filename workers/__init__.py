@@ -7,8 +7,16 @@ execution, branch-per-task, retries, artifacts, events).
 
 from __future__ import annotations
 
-# Importing the events module registers worker events in the global EVENT_REGISTRY.
+# Importing the events modules registers their events in the global EVENT_REGISTRY.
+import events.domain.architecture
 import events.domain.worker
+from workers.architect import (
+    ClaudeArchitectWorker,
+    InMemoryReviewStore,
+    ReviewResult,
+    ReviewStore,
+)
+from workers.architect_prompts import ReviewKind
 from workers.contracts import (
     ArtifactStore,
     CommandResult,
@@ -30,6 +38,7 @@ from workers.workspace import Workspace, WorkspaceManager
 
 __all__ = [
     "ArtifactStore",
+    "ClaudeArchitectWorker",
     "CommandResult",
     "CommandRunner",
     "DockerCommandRunner",
@@ -37,9 +46,13 @@ __all__ = [
     "FileArtifactStore",
     "FilePatch",
     "InMemoryArtifactStore",
+    "InMemoryReviewStore",
     "InMemoryTaskSource",
     "LocalCommandRunner",
     "OpenClawWorker",
+    "ReviewKind",
+    "ReviewResult",
+    "ReviewStore",
     "StepResult",
     "TaskSource",
     "Workspace",
