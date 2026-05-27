@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pytest tests/test_providers.py -q)",
+      "Bash(python -m ruff check --fix providers tests/test_providers.py events/domain/provider.py)",
+      "Bash(python -m ruff format providers tests/test_providers.py events/domain/provider.py)",
+      "Bash(python -m mypy runtime agents contracts events workflows memory sandbox observability scheduler tasks adapters providers)"
+    ]
+  }
+}

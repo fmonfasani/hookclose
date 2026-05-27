@@ -66,6 +66,7 @@ packages = [
     "scheduler",
     "tasks",
     "adapters",
+    "providers",
 ]
 
 # -----------------------------------------------------------------------------
@@ -112,7 +113,7 @@ ignore = [
 [tool.ruff.lint.isort]
 known-first-party = [
     "runtime", "agents", "contracts", "events", "workflows",
-    "memory", "sandbox", "observability", "scheduler", "tasks", "adapters",
+    "memory", "sandbox", "observability", "scheduler", "tasks", "adapters", "providers",
 ]
 force-sort-within-sections = true
 
@@ -168,7 +169,7 @@ markers = [
 branch = true
 source = [
     "runtime", "agents", "contracts", "events", "workflows",
-    "memory", "sandbox", "observability", "scheduler", "tasks", "adapters",
+    "memory", "sandbox", "observability", "scheduler", "tasks", "adapters", "providers",
 ]
 
 [tool.coverage.report]

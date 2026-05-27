@@ -24,6 +24,7 @@ class EventTopic(StrEnum):
     REPAIR = "aine.repair"
     MEMORY = "aine.memory"
     SCHEDULER = "aine.scheduler"
+    PROVIDER = "aine.provider"
 
 
 EVENT_REGISTRY: Final[dict[str, type[DomainEvent]]] = {}
