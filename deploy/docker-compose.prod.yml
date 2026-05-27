@@ -1,0 +1,135 @@
+# Production stack for HookClose / AINE runtime (VPS, 24/7).
+#
+# Run from the repo root:
+#   docker compose --env-file deploy/.env.prod -f deploy/docker-compose.prod.yml up -d
+#
+# Differences vs. the local compose:
+#   - data services are NOT published to the host (only reachable on the internal
+#     network); the only ingress is nginx on 80/443,
+#   - restart: always + healthchecks + log rotation on every service,
+#   - Redis AOF + named volumes for durability,
+#   - resource limits so a runaway worker cannot starve the box.
+name: hookclose-prod
+
+x-svc: &svc
+  env_file: ../.env  # symlink/copy of deploy/.env.prod on the server (see runbook)
+  restart: always
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "5"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hookclose-postgres
+    <<: *svc
+    environment:
+      POSTGRES_DB: ${HOOKCLOSE_POSTGRES_DB:-hookclose}
+      POSTGRES_USER: ${HOOKCLOSE_POSTGRES_USER:-hookclose}
+      POSTGRES_PASSWORD: ${HOOKCLOSE_POSTGRES_PASSWORD:?set in deploy/.env.prod}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../infra/postgres/init.sql:/docker-entrypoint-initdb.d/00_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${HOOKCLOSE_POSTGRES_USER:-hookclose} -d ${HOOKCLOSE_POSTGRES_DB:-hookclose}"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+
+  redis:
+    image: redis:7-alpine
+    container_name: hookclose-redis
+    <<: *svc
+    command: ["redis-server", "--appendonly", "yes", "--save", "60", "1000"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+
+  scheduler:
+    container_name: hookclose-scheduler
+    build:
+      context: ../scheduler
+    <<: *svc
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8100/health')"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+
+  workflow-engine:
+    container_name: hookclose-workflow-engine
+    build:
+      context: ../workflow-engine
+    <<: *svc
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8101/health')"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+
+  opencode-worker:
+    container_name: hookclose-opencode-worker
+    build:
+      context: ../opencode-worker
+    <<: *svc
+    depends_on:
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8102/health')"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: hookclose-nginx
+    <<: *svc
+    depends_on:
+      workflow-engine: { condition: service_started }
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/healthz"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:

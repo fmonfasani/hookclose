@@ -81,7 +81,7 @@ line-length = 100
 target-version = "py311"
 # Standalone container entrypoints (hyphenated, non-importable) are rebuilt as
 # real workers in later phases; exclude until then. Keep importable packages linted.
-extend-exclude = ["infra", "docker", "specs", "reviews", "opencode-worker", "workflow-engine"]
+extend-exclude = ["infra", "docker", "deploy", "specs", "reviews", "opencode-worker", "workflow-engine"]
 
 [tool.ruff.lint]
 select = [
