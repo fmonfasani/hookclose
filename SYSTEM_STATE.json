@@ -9,11 +9,12 @@
     6,
     7,
     19,
-    20
+    20,
+    21
   ],
   "current_phase": 3,
-  "current_prompt": 21,
+  "current_prompt": 22,
   "failed_prompts": [],
-  "runtime_state": "PROVIDERS",
-  "updated_at": "2026-05-27T11:53:18+00:00"
+  "runtime_state": "ROUTING",
+  "updated_at": "2026-05-27T11:56:45+00:00"
 }

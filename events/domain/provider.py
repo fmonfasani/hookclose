@@ -77,3 +77,16 @@ class AllProvidersExhausted(DomainEvent):
 
     capability: str
     tried: tuple[str, ...]
+
+
+@register_event
+class RoutingDecided(DomainEvent):
+    """Auditable record of a ComplexityRoutingEngine decision."""
+
+    event_type: ClassVar[str] = "provider.routing_decided"
+    topic: ClassVar[str] = EventTopic.PROVIDER.value
+
+    capability: str
+    complexity_score: float
+    ordered_providers: tuple[str, ...]
+    reason: str

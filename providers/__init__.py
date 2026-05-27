@@ -31,6 +31,13 @@ from providers.persistence import (
     RedisProviderStateStore,
 )
 from providers.registry import ProviderRegistry
+from providers.routing import (
+    ComplexityRoutingEngine,
+    RoutingDecision,
+    RoutingPolicy,
+    RoutingRequest,
+    TaskComplexity,
+)
 from providers.state import (
     Capability,
     ProviderHealth,
@@ -43,6 +50,7 @@ __all__ = [
     "BaseProvider",
     "Capability",
     "ClaudeProvider",
+    "ComplexityRoutingEngine",
     "GeminiProvider",
     "InMemoryProviderStateStore",
     "LocalProvider",
@@ -61,4 +69,8 @@ __all__ = [
     "ProviderTimeout",
     "ProviderUnavailable",
     "RedisProviderStateStore",
+    "RoutingDecision",
+    "RoutingPolicy",
+    "RoutingRequest",
+    "TaskComplexity",
 ]
