@@ -25,6 +25,17 @@ class TaskExecutionStarted(DomainEvent):
 
 
 @register_event
+class TaskCodeGenerated(DomainEvent):
+    event_type: ClassVar[str] = "worker.code_generated"
+    topic: ClassVar[str] = EventTopic.WORKER.value
+
+    task_id: str
+    provider: str
+    files: int
+    total_tokens: int
+
+
+@register_event
 class TaskStepCompleted(DomainEvent):
     event_type: ClassVar[str] = "worker.step_completed"
     topic: ClassVar[str] = EventTopic.WORKER.value
