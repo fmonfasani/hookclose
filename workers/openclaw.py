@@ -30,13 +30,16 @@ from typing import cast
 from contracts.event_bus import EventBusPort
 from events.base import DomainEvent
 from events.domain.worker import (
+    TaskCodeGenerated,
     TaskExecutionFailed,
     TaskExecutionStarted,
     TaskExecutionSucceeded,
     TaskRetryScheduled,
     TaskStepCompleted,
 )
+from providers.errors import NoProviderAvailable
 from tasks.models import Task
+from workers.codegen import CodeGenerator
 from workers.contracts import (
     ArtifactStore,
     CommandRunner,
@@ -48,6 +51,7 @@ from workers.contracts import (
 from workers.workspace import WorkspaceManager
 
 _DEFAULT_TIMEOUT = 120.0
+_GEN_STEP = "generate"
 
 
 class OpenClawWorker:
@@ -60,11 +64,13 @@ class OpenClawWorker:
         *,
         artifact_store: ArtifactStore | None = None,
         event_bus: EventBusPort | None = None,
+        generator: CodeGenerator | None = None,
     ) -> None:
         self._runner = runner
         self._workspaces = workspaces
         self._artifacts = artifact_store
         self._bus = event_bus
+        self._generator = generator
 
     # --- public API --------------------------------------------------------
 
@@ -119,14 +125,24 @@ class OpenClawWorker:
             )
         )
 
-        patches = [FilePatch(path=p["path"], content=p["content"]) for p in _patches(task)]
-        workspace.write_patches(patches)
-
-        timeout = float(task.payload.get("timeout", _DEFAULT_TIMEOUT))
         steps: list[StepResult] = []
         failed_step: str | None = None
 
-        for spec in _steps(task):
+        # Generation phase: ask a provider to produce file patches for the goal.
+        static_patches = [FilePatch(path=p["path"], content=p["content"]) for p in _patches(task)]
+        generated_patches, gen_step = await self._generate(task)
+        if gen_step is not None:
+            steps.append(gen_step)
+            if not gen_step.success:
+                failed_step = gen_step.name
+
+        if failed_step is None:
+            workspace.write_patches([*generated_patches, *static_patches])
+
+        timeout = float(task.payload.get("timeout", _DEFAULT_TIMEOUT))
+
+        steps_to_run = _steps(task) if failed_step is None else []
+        for spec in steps_to_run:
             command = tuple(str(c) for c in cast("Sequence[object]", spec["command"]))
             result = await self._runner.run(list(command), cwd=str(workspace.root), timeout=timeout)
             step = StepResult(
@@ -191,6 +207,50 @@ class OpenClawWorker:
             )
         return report
 
+    async def _generate(self, task: Task) -> tuple[list[FilePatch], StepResult | None]:
+        """Run the optional generation phase. Returns (patches, gen_step).
+
+        gen_step is None when the task has no ``generate`` spec or no generator is
+        configured. On generation failure it is a failed StepResult so the task
+        fails cleanly without running subsequent steps.
+        """
+        spec = task.payload.get("generate")
+        if not isinstance(spec, dict) or self._generator is None:
+            return [], None
+
+        goal = str(spec.get("goal", ""))
+        context = str(spec.get("context", ""))
+        try:
+            result = await self._generator.generate(goal, context=context)
+        except NoProviderAvailable as exc:
+            return [], _failed_gen_step(f"no provider available: {exc}")
+
+        if result.degraded or not result.patches:
+            return [], _failed_gen_step("provider returned no usable files")
+
+        await self._emit(
+            TaskCodeGenerated(
+                task_id=task.id,
+                provider=result.provider,
+                files=len(result.patches),
+                total_tokens=result.total_tokens,
+            )
+        )
+        await self._emit(
+            TaskStepCompleted(
+                task_id=task.id, step=_GEN_STEP, exit_code=0, success=True, duration_ms=0
+            )
+        )
+        gen_step = StepResult(
+            name=_GEN_STEP,
+            command=("<llm:generate>",),
+            exit_code=0,
+            success=True,
+            duration_ms=0,
+            stdout_tail=f"{len(result.patches)} file(s) via {result.provider}",
+        )
+        return list(result.patches), gen_step
+
     async def _persist_report(
         self,
         task: Task,
@@ -218,6 +278,17 @@ class OpenClawWorker:
     async def _emit(self, event: DomainEvent) -> None:
         if self._bus is not None:
             await self._bus.publish(event)
+
+
+def _failed_gen_step(reason: str) -> StepResult:
+    return StepResult(
+        name=_GEN_STEP,
+        command=("<llm:generate>",),
+        exit_code=1,
+        success=False,
+        duration_ms=0,
+        stderr_tail=reason[:600],
+    )
 
 
 def _patches(task: Task) -> list[dict[str, str]]:

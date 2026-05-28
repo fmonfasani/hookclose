@@ -11,7 +11,9 @@
       "Read(//c/Users/Usuario/.claude/projects/d--Software-Development-Porfolio-Hookclose/memory/**)",
       "Bash(git --version)",
       "Bash(awk '{print $5, $9}')",
-      "Bash(python -m pytest -m \"not integration\" --cov --cov-report=)"
+      "Bash(python -m pytest -m \"not integration\" --cov --cov-report=)",
+      "Bash(python -m ruff check --fix workers events tests/test_worker_codegen.py)",
+      "Bash(python -m ruff format workers events tests)"
     ],
     "additionalDirectories": [
       "d:\\Users\\Usuario\\.claude\\projects\\d--Software-Development-Porfolio-Hookclose\\memory"

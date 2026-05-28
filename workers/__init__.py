@@ -17,6 +17,7 @@ from workers.architect import (
     ReviewStore,
 )
 from workers.architect_prompts import ReviewKind
+from workers.codegen import CodeGenerator, GenerationResult
 from workers.contracts import (
     ArtifactStore,
     CommandResult,
@@ -39,12 +40,14 @@ from workers.workspace import Workspace, WorkspaceManager
 __all__ = [
     "ArtifactStore",
     "ClaudeArchitectWorker",
+    "CodeGenerator",
     "CommandResult",
     "CommandRunner",
     "DockerCommandRunner",
     "ExecutionReport",
     "FileArtifactStore",
     "FilePatch",
+    "GenerationResult",
     "InMemoryArtifactStore",
     "InMemoryReviewStore",
     "InMemoryTaskSource",
