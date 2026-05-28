@@ -52,10 +52,13 @@ class OpenAIAdapter:
         default_model: str = "gpt-4o-mini",
         base_url: str | None = None,
         timeout: float = 60.0,
+        default_headers: dict[str, str] | None = None,
     ) -> OpenAIAdapter:
         import openai  # lazy: only needed for a real client  # noqa: PLC0415
 
-        client = openai.AsyncOpenAI(api_key=api_key, base_url=base_url, timeout=timeout)
+        client = openai.AsyncOpenAI(
+            api_key=api_key, base_url=base_url, timeout=timeout, default_headers=default_headers
+        )
         return cls(client, default_model=default_model, timeout=timeout)
 
     @classmethod
@@ -105,6 +108,11 @@ class OpenAIAdapter:
         )
 
     async def stream(self, request: LLMRequest) -> AsyncIterator[str]:
+        # The port declares stream as a coroutine returning an async iterator,
+        # so return the generator rather than being one.
+        return self._stream(request)
+
+    async def _stream(self, request: LLMRequest) -> AsyncIterator[str]:
         kwargs = self._build_kwargs(request)
         kwargs["stream"] = True
         try:
