@@ -1,6 +1,6 @@
 # Build Prompts — Index
 
-The deterministic, phase-by-phase build plan for HookClose / AINE. Each file is one
+The deterministic, phase-by-phase build plan for AINE. Each file is one
 prompt; numbers are preserved from the original sequence (gaps at 08–18 are intentional —
 those were empty or superseded, see below). Execute **in numeric order**. Build state is
 tracked in [`../SYSTEM_STATE.json`](../SYSTEM_STATE.json); the phase map is in

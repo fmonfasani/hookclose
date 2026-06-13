@@ -1,4 +1,4 @@
-# HookClose / AINE Runtime — Build Roadmap
+# AINE Runtime — Build Roadmap
 
 Deterministic, phase-by-phase build. The full prompt set lives in [`prompts/`](prompts/INDEX.md)
 (numbers preserved; 08–18 were removed as empty/superseded). State is tracked in

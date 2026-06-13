@@ -1,4 +1,4 @@
-# Contributing to HookClose / AINE Runtime
+# Contributing to AINE Runtime
 
 This is an **operational runtime**, not a library of one-off scripts. Contributions
 are held to engineering standards that keep the system deterministic, reproducible,
