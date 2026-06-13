@@ -1,6 +1,6 @@
 # Architecture
 
-HookClose / AINE is an **AI-native operational runtime** for autonomous software
+AINE is an **AI-native operational runtime** for autonomous software
 development. It orchestrates specialized agents under deterministic, observable,
 event-capable workflows. The runtime is the system of record; LLMs are tools invoked
 *inside* it, never the control plane.

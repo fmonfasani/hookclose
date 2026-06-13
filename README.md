@@ -3,6 +3,10 @@
 > Operational infrastructure for **autonomous software development**.
 > Not a chatbot. Not an agent. A runtime for orchestrating specialized agents under deterministic, observable, event-capable workflows.
 
+> **Naming.** This project is **AINE** (the platform/engine). `HookClose` is the
+> historical repo name — same thing, kept only for the repo URL and metric
+> namespaces until renamed. See [`NAMING.md`](NAMING.md) for the full decision.
+
 ---
 
 ## 1. Purpose
