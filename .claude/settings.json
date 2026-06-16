@@ -12,7 +12,16 @@
       "Bash(python -m pytest tests/test_openclaw_worker.py -q)",
       "Bash(grep -vE \"warning:|ANN10|removed|no effect|^\\\\s*-|^$\")",
       "Bash(grep -vE \"warning:|All checks|^\\\\s*-|^$\")",
-      "Bash(python -m mypy runtime agents contracts events workflows memory sandbox observability scheduler tasks adapters providers workers)"
+      "Bash(python -m mypy runtime agents contracts events workflows memory sandbox observability scheduler tasks adapters providers workers)",
+      "Bash(python -c ' *)",
+      "Bash(.venv/Scripts/python -m ruff check . --output-format=concise)",
+      "Bash(git commit -m ' *)",
+      "Bash(python -m ruff format tests/test_admin_api.py)",
+      "Bash(git commit *)",
+      "Bash(pip install *)",
+      "Bash(python -c \"from waseller.auth.service import AuthService\")",
+      "Bash(python -m pytest tests/test_auth.py -v)",
+      "Bash(python -m pytest -q tests/test_auth.py)"
     ]
   }
 }
